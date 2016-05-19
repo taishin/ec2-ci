@@ -1,0 +1,55 @@
+{
+  "AWSTemplateFormatVersion": "2010-09-09",
+  "Parameters" : {
+    "AmiId" : {
+      "Description" : "AMI ID",
+      "Type" : "String",
+      "Default" : "ami-29160d47"
+    },
+    "InstanceType" : {
+      "Description" : "Instance Type",
+      "Type" : "String",
+      "Default" : "t2.micro"
+    },
+    "KeyName" : {
+      "Description" : "Amazon EC2 Key Pair",
+      "Type" : "AWS::EC2::KeyPair::KeyName"
+    }
+  },  
+  "Resources": {
+    "SSHGroup" : {
+      "Type" : "AWS::EC2::SecurityGroup",
+      "Properties" : {
+        "GroupDescription" : "Enable SSH access via port 22",
+        "SecurityGroupIngress": [{
+          "IpProtocol" : "tcp",
+          "CidrIp" : "0.0.0.0/0",
+          "FromPort" : "22", "ToPort" : "22"
+        }]
+      }
+    },
+    "TestServer" : {
+      "Type" : "AWS::EC2::Instance",
+      "Properties" : {
+        "ImageId" : { "Ref" : "AmiId" },
+        "InstanceType" : { "Ref" : "InstanceType" },
+        "KeyName": { "Ref": "KeyName" },
+        "SecurityGroupIds" : [
+          { "Ref" : "SSHGroup" }
+        ]
+      }
+    },
+    "TestServerEip": {
+      "Type": "AWS::EC2::EIP",
+      "Properties": {
+        "InstanceId": { "Ref": "TestServer" }
+      }
+    }
+  },
+  "Outputs" : {
+    "PublicIP" : {
+      "Description" : "Public IP Address",
+      "Value" : { "Ref" : "TestServerEip" }
+    }
+  }
+}

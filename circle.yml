@@ -7,17 +7,22 @@ machine:
 dependencies:
   pre:
     - sudo pip install ansible
+  override:
+    environment:
+      AWS_AMI_ID: ami-29160d47
+      AWS_Instance_Type: t2.micro
+      SSH_User: ec2-user
+
 test:
   pre:
+    - aws cloudformation create-stack --stack-name ci-test --template-body file:///./cloudformation.json --parameters ParameterKey=KeyName,ParameterValue=$AWS_KEY_NAME ParameterKey=AmiId,ParameterValue=$AWS_AMI_ID ParameterKey=InstanceType,ParameterValue=$AWS_Instance_Type
     - aws ec2 run-instances --image-id $AWS_AMI_ID --count 1 --instance-type t2.micro --key-name $AWS_KEY_NAME --security-group-ids $AWS_SG_ID --subnet-id $AWS_SUBNET_ID --associate-public-ip-address | jq -r '.Instances[].InstanceId' > /tmp/instanceid.txt
-    - sleep 20
-    - aws ec2 describe-instances --instance-id `cat /tmp/instanceid.txt` | jq -r '.Reservations[] .Instances[] .PublicIpAddress' > /tmp/publicip.txt
+    - sleep 60
+    - aws cloudformation describe-stacks --stack-name ci-test | jq -r '.Stacks[].Outputs[].OutputValue' > /tmp/publicip.txt
     - echo "`cat /tmp/publicip.txt` testserver" >> /tmp/hosts.txt
     - cp /etc/hosts .
     - sudo bash -c "cat hosts /tmp/hosts.txt | tee /etc/hosts"
     - echo "Host testserver" >> ~/.ssh/config
     - echo "User ec2-user" >> ~/.ssh/config
-    - sleep 60
-    - ssh ec2-user@testserver sudo yum update -y
+    - ssh $SSH_User@testserver sudo yum update -y
   override:
-    - ping -c 3 testserver
