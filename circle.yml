@@ -15,8 +15,7 @@ dependencies:
 test:
   pre:
     - aws cloudformation create-stack --stack-name ci-test --template-body file://cloudformation.json --parameters ParameterKey=KeyName,ParameterValue=$AWS_KEY_NAME ParameterKey=AmiId,ParameterValue=$AWS_AMI_ID ParameterKey=InstanceType,ParameterValue=$AWS_INSTANCE_TYPE
-    - aws ec2 run-instances --image-id $AWS_AMI_ID --count 1 --instance-type t2.micro --key-name $AWS_KEY_NAME --security-group-ids $AWS_SG_ID --subnet-id $AWS_SUBNET_ID --associate-public-ip-address | jq -r '.Instances[].InstanceId' > /tmp/instanceid.txt
-    - sleep 60
+    - sleep 90
     - aws cloudformation describe-stacks --stack-name ci-test | jq -r '.Stacks[].Outputs[].OutputValue' > /tmp/publicip.txt
     - echo "`cat /tmp/publicip.txt` testserver" >> /tmp/hosts.txt
     - cp /etc/hosts .
@@ -25,4 +24,4 @@ test:
     - echo "User ec2-user" >> ~/.ssh/config
     - ssh $SSH_USER@testserver sudo yum update -y
   override:
-    - ping -c 3 testserver
+    
