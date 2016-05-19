@@ -1,0 +1,23 @@
+machine:
+  timezone: Asia/Tokyo
+  ruby:
+    version:
+      2.1.2
+
+dependencies:
+  pre:
+    - sudo pip install ansible
+test:
+  pre:
+    - aws ec2 run-instances --image-id $AWS_AMI_ID --count 1 --instance-type t2.micro --key-name $AWS_KEY_NAME --security-group-ids $AWS_SG_ID --subnet-id $AWS_SUBNET_ID --associate-public-ip-address | jq -r '.Instances[].InstanceId' > /tmp/instanceid.txt
+    - sleep 20
+    - aws ec2 describe-instances --instance-id `cat /tmp/instanceid.txt` | jq -r '.Reservations[] .Instances[] .PublicIpAddress' > /tmp/publicip.txt
+    - echo "`cat /tmp/publicip.txt` testserver" >> /tmp/hosts.txt
+    - cp /etc/hosts .
+    - sudo bash -c "cat hosts /tmp/hosts.txt | tee /etc/hosts"
+    - echo "Host testserver" >> ~/.ssh/config
+    - echo "User ec2-user" >> ~/.ssh/config
+    - sleep 60
+    - ssh ec2-user@testserver sudo yum update -y
+  override:
+    - ping -c 3 testserver
