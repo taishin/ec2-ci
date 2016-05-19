@@ -1,0 +1,8 @@
+- hosts: testserver
+  become: yes
+  tasks:
+  - name: install nginx
+    yum: name=nginx
+
+  - name: Start and Enable to nginx
+    service: name=nginx state=started enabled=yes

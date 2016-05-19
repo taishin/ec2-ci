@@ -25,6 +25,7 @@ test:
     - echo "User ec2-user" >> ~/.ssh/config
     - ssh $SSH_USER@testserver sudo yum update -y
   override:
-
+    - ansible-playbook -i ansible/hosts ansible/nginx.yml
+    - bundle exec rake spec:testserver
   post:
     - aws cloudformation delete-stack --stack-name $AWS_CF_STACK_NAME
