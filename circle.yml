@@ -4,10 +4,10 @@ machine:
     version:
       2.1.2
   environment:
-    AWS_AMI_ID: ami-eec1c380
+    AWS_AMI_ID: ami-29160d47
     AWS_INSTANCE_TYPE: t2.micro
     AWS_CF_STACK_NAME: ci-test
-    SSH_USER: centos
+    SSH_USER: ec2-user
 
 dependencies:
   pre:
