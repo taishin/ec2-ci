@@ -15,7 +15,7 @@ dependencies:
 test:
   pre:
     - aws cloudformation create-stack --stack-name ci-test --template-body file://cloudformation.json --parameters ParameterKey=KeyName,ParameterValue=$AWS_KEY_NAME ParameterKey=AmiId,ParameterValue=$AWS_AMI_ID ParameterKey=InstanceType,ParameterValue=$AWS_INSTANCE_TYPE
-    - sleep 90
+    - sleep 120
     - aws cloudformation describe-stacks --stack-name ci-test | jq -r '.Stacks[].Outputs[].OutputValue' > /tmp/publicip.txt
     - echo "`cat /tmp/publicip.txt` testserver" >> /tmp/hosts.txt
     - cp /etc/hosts .
@@ -24,4 +24,3 @@ test:
     - echo "User ec2-user" >> ~/.ssh/config
     - ssh $SSH_USER@testserver sudo yum update -y
   override:
-    
