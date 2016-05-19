@@ -22,7 +22,7 @@ test:
     - cp /etc/hosts .
     - sudo bash -c "cat hosts /tmp/hosts.txt | tee /etc/hosts"
     - echo "Host testserver" >> ~/.ssh/config
-    - echo "User ec2-user" >> ~/.ssh/config
+    - echo "User $SSH_USER" >> ~/.ssh/config
     - ssh $SSH_USER@testserver sudo yum update -y
   override:
     - ansible-playbook -i ansible/hosts ansible/nginx.yml
