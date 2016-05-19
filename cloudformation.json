@@ -3,13 +3,11 @@
   "Parameters" : {
     "AmiId" : {
       "Description" : "AMI ID",
-      "Type" : "String",
-      "Default" : "ami-29160d47"
+      "Type" : "String"
     },
     "InstanceType" : {
       "Description" : "Instance Type",
-      "Type" : "String",
-      "Default" : "t2.micro"
+      "Type" : "String"
     },
     "KeyName" : {
       "Description" : "Amazon EC2 Key Pair",
