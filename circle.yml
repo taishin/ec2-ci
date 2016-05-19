@@ -4,10 +4,10 @@ machine:
     version:
       2.1.2
   environment:
-    AWS_AMI_ID: ami-29160d47
+    AWS_AMI_ID: ami-eec1c380
     AWS_INSTANCE_TYPE: t2.micro
     AWS_CF_STACK_NAME: ci-test
-    SSH_USER: ec2-user
+    SSH_USER: centos
 
 dependencies:
   pre:
@@ -22,7 +22,7 @@ test:
     - cp /etc/hosts .
     - sudo bash -c "cat hosts /tmp/hosts.txt | tee /etc/hosts"
     - echo "Host testserver" >> ~/.ssh/config
-    - echo "User ec2-user" >> ~/.ssh/config
+    - echo "User `echo $SSH_USER`" >> ~/.ssh/config
     - ssh `echo $SSH_USER`@testserver sudo yum update -y
   override:
     - ansible-playbook -i ansible/hosts ansible/nginx.yml
