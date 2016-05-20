@@ -16,7 +16,7 @@ dependencies:
 test:
   pre:
     - aws cloudformation create-stack --stack-name $AWS_CF_STACK_NAME --template-body file://cloudformation.json --parameters ParameterKey=KeyName,ParameterValue=$AWS_KEY_NAME ParameterKey=AmiId,ParameterValue=$AWS_AMI_ID ParameterKey=InstanceType,ParameterValue=$AWS_INSTANCE_TYPE
-    - sleep 120
+    - aws cloudformation wait stack-create-complete --stack-name $AWS_CF_STACK_NAME
     - aws cloudformation describe-stacks --stack-name $AWS_CF_STACK_NAME | jq -r '.Stacks[].Outputs[].OutputValue' > /tmp/publicip.txt
     - echo "`cat /tmp/publicip.txt` testserver" >> /tmp/hosts.txt
     - cp /etc/hosts .
